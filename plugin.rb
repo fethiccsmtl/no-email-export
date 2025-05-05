@@ -9,9 +9,10 @@ after_initialize do
   # Crée une extension du contrôleur
   module ::ExportCsvControllerExtension
     def export_entity
-      Rails.logger.debug("=== DEBUG: export_entity appelé ===")
-      Rails.logger.debug("Params reçus : #{params.inspect}")
+      Rails.logger.warn("=== DEBUG: export_entity appelé ===")
+      Rails.logger.warn("Params reçus : #{params.inspect}")
       super # Appelle la méthode originale
+      Rails.logger.warn("=== DEBUG: export_entity fin de l'appel ===")
     end
   end
 
