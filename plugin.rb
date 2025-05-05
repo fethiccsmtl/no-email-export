@@ -1,4 +1,4 @@
-# name: no-email-user-export
+# name: no-email-export
 # about: Supprime les emails des exports CSV d'utilisateurs
 # version: 0.1
 # authors: TonNom
