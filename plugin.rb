@@ -7,6 +7,7 @@ after_initialize do
     module ::NoEmailExport
       module RemoveEmailsFromExport
         def execute(args)
+          Rails.logger.warn("🔍 Plugin no-email-export: intercepted export job for #{args[:type]}")
           return super(args) unless args[:type] == 'user_list'
   
           rows = []
