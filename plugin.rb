@@ -3,34 +3,51 @@
 # version: 0.1
 # authors: Your Name
 
+
+
 after_initialize do
-    module ::NoEmailExport
-      module PatchCsvExport
-        def create
-          result = super
-  
-          Rails.logger.warn("Type d'export: #{self.export_type}")
-          
-          if self.export_type == 'user_list'
-            csv = CSV.parse(result, headers: true)
-            csv.delete('Email')
-  
-            # Réécriture du CSV sans la colonne
-            result = CSV.generate do |new_csv|
-              new_csv << csv.headers
-              csv.each { |row| new_csv << row.fields }
-            end
-          end
-  
-          result
-        end
-      end
-    end
-  
-    if defined?(CsvExport)
-      CsvExport.prepend(::NoEmailExport::PatchCsvExport)
+  # Crée une extension du contrôleur
+  module ::ExportCsvControllerExtension
+    def export_entity
+      Rails.logger.debug("=== DEBUG: export_entity appelé ===")
+      Rails.logger.debug("Params reçus : #{params.inspect}")
+      super # Appelle la méthode originale
     end
   end
+
+  # Injecte l'extension dans le contrôleur
+  ::ExportCsvController.prepend(::ExportCsvControllerExtension)
+end
+
+
+# after_initialize do
+#     module ::NoEmailExport
+#       module PatchCsvExport
+#         def create
+#           result = super
+  
+#           Rails.logger.warn("Type d'export: #{self.export_type}")
+          
+#           if self.export_type == 'user_list'
+#             csv = CSV.parse(result, headers: true)
+#             csv.delete('Email')
+  
+#             # Réécriture du CSV sans la colonne
+#             result = CSV.generate do |new_csv|
+#               new_csv << csv.headers
+#               csv.each { |row| new_csv << row.fields }
+#             end
+#           end
+  
+#           result
+#         end
+#       end
+#     end
+  
+#     if defined?(CsvExport)
+#       CsvExport.prepend(::NoEmailExport::PatchCsvExport)
+#     end
+#   end
 
 
 # after_initialize do
