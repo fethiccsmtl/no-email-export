@@ -5,15 +5,14 @@
 
 after_initialize do
     module ::NoEmailExport
-      class RemoveEmailsFromExport < ::Jobs::ExportCsvFile
+      module RemoveEmailsFromExport
         def execute(args)
-          return unless args[:type] == 'user_list'
+          return super(args) unless args[:type] == 'user_list'
   
           rows = []
           headers = []
   
           User.real.includes(:groups).find_each do |user|
-            # Construis les données SANS l'email
             row = {
               "Username" => user.username,
               "Name" => user.name,
@@ -40,4 +39,4 @@ after_initialize do
     end
   
     ::Jobs::ExportCsvFile.prepend(::NoEmailExport::RemoveEmailsFromExport)
-  end
+end
