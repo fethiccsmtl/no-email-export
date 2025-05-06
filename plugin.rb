@@ -3,22 +3,40 @@
 # version: 0.1
 # authors: Your Name
 
-
-
 after_initialize do
-  # Crée une extension du contrôleur
-  module ::ExportCsvControllerExtension
-    def export_entity
-      Rails.logger.warn("=== DEBUG: export_entity appelé ===")
-      Rails.logger.warn("Params reçus : #{params.inspect}")
-      super # Appelle la méthode originale
-      Rails.logger.warn("=== DEBUG: export_entity fin de l'appel ===")
+  module ::Jobs::ExportCsvFileExtension
+    def get_base_user_array(user)
+      # Appel à la méthode d'origine si tu veux t’en servir
+      original = super
+
+      # Tu peux ici modifier le tableau, ajouter des logs, etc.
+      Rails.logger.warn("EXPORT DEBUG: export de l'utilisateur #{original.inspect}")
+
+      # Exemple : ajouter un champ à la fin
+      original << "plugin_custom_value"
+
+      original
     end
   end
 
-  # Injecte l'extension dans le contrôleur
-  ::ExportCsvController.prepend(::ExportCsvControllerExtension)
+  # On injecte notre module AVANT le chargement du job
+  ::Jobs::ExportCsvFile.prepend(::Jobs::ExportCsvFileExtension)
 end
+
+# after_initialize do
+#   # Crée une extension du contrôleur
+#   module ::ExportCsvControllerExtension
+#     def export_entity
+#       Rails.logger.warn("=== DEBUG: export_entity appelé ===")
+#       Rails.logger.warn("Params reçus : #{params.inspect}")
+#       super # Appelle la méthode originale
+#       Rails.logger.warn("=== DEBUG: export_entity fin de l'appel ===")
+#     end
+#   end
+
+#   # Injecte l'extension dans le contrôleur
+#   ::ExportCsvController.prepend(::ExportCsvControllerExtension)
+# end
 
 
 # after_initialize do
