@@ -6,19 +6,20 @@
 after_initialize do
   module ::Jobs::ExportCsvFileExtension
     def get_base_user_array(user)
-      # Appel à la méthode d'origine si tu veux t’en servir
-      original = super
+      # Appeler la méthode d'origine
+      original_array = super
+  
+      # Remplacer les emails (primary et secondary) par "#######"
+      original_array[3] = "#######"  # Remplacer le primary email (position 4)
+      original_array[19] = "#######" # Remplacer les secondary emails (position 20)
+  
+      Rails.logger.warn("EXPORT DEBUG: #{original.inspect}")
 
-      # Tu peux ici modifier le tableau, ajouter des logs, etc.
-      Rails.logger.warn("EXPORT DEBUG: export de l'utilisateur #{original.inspect}")
-
-      # Exemple : ajouter un champ à la fin
-      original << "plugin_custom_value"
-
-      original
+      # Retourner l'array modifié
+      original_array
     end
   end
-
+  
   # On injecte notre module AVANT le chargement du job
   ::Jobs::ExportCsvFile.prepend(::Jobs::ExportCsvFileExtension)
 end
