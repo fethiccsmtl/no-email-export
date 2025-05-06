@@ -13,13 +13,13 @@ after_initialize do
       original_array[3] = "#######"  # Remplacer le primary email (position 4)
       original_array[19] = "#######" # Remplacer les secondary emails (position 20)
   
-      Rails.logger.warn("EXPORT DEBUG: #{original.inspect}")
+      Rails.logger.warn("EXPORT DEBUG: #{original_array.inspect}")
 
       # Retourner l'array modifié
       original_array
     end
   end
-  
+
   # On injecte notre module AVANT le chargement du job
   ::Jobs::ExportCsvFile.prepend(::Jobs::ExportCsvFileExtension)
 end
