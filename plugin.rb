@@ -1,110 +1,21 @@
 # name: no-email-export
 # about: Removes email from user CSV export
 # version: 0.1
-# authors: Your Name
+# authors: Fethi Bey Abi Ayad
 
 after_initialize do
   module ::Jobs::ExportCsvFileExtension
     def get_base_user_array(user)
-      # Appeler la méthode d'origine
-      original_array = super
-  
-      # Remplacer les emails (primary et secondary) par "#######"
-      original_array[3] = "#######"  # Remplacer le primary email (position 4)
-      original_array[19] = "#######" # Remplacer les secondary emails (position 20)
-  
-      Rails.logger.warn("EXPORT DEBUG: #{original_array.inspect}")
 
-      # Retourner l'array modifié
-      original_array
+      user_array = super
+  
+      user_array[3] = "#######"  # Replace Primary Email
+      user_array[19] = "#######" # Replace Secondary Email
+  
+      user_array
     end
   end
 
   # On injecte notre module AVANT le chargement du job
   ::Jobs::ExportCsvFile.prepend(::Jobs::ExportCsvFileExtension)
 end
-
-# after_initialize do
-#   # Crée une extension du contrôleur
-#   module ::ExportCsvControllerExtension
-#     def export_entity
-#       Rails.logger.warn("=== DEBUG: export_entity appelé ===")
-#       Rails.logger.warn("Params reçus : #{params.inspect}")
-#       super # Appelle la méthode originale
-#       Rails.logger.warn("=== DEBUG: export_entity fin de l'appel ===")
-#     end
-#   end
-
-#   # Injecte l'extension dans le contrôleur
-#   ::ExportCsvController.prepend(::ExportCsvControllerExtension)
-# end
-
-
-# after_initialize do
-#     module ::NoEmailExport
-#       module PatchCsvExport
-#         def create
-#           result = super
-  
-#           Rails.logger.warn("Type d'export: #{self.export_type}")
-          
-#           if self.export_type == 'user_list'
-#             csv = CSV.parse(result, headers: true)
-#             csv.delete('Email')
-  
-#             # Réécriture du CSV sans la colonne
-#             result = CSV.generate do |new_csv|
-#               new_csv << csv.headers
-#               csv.each { |row| new_csv << row.fields }
-#             end
-#           end
-  
-#           result
-#         end
-#       end
-#     end
-  
-#     if defined?(CsvExport)
-#       CsvExport.prepend(::NoEmailExport::PatchCsvExport)
-#     end
-#   end
-
-
-# after_initialize do
-#     module ::NoEmailExport
-#       module RemoveEmailsFromExport
-#         def execute(args)
-#           Rails.logger.warn("🔍 Plugin no-email-export: intercepted export job for #{args[:type]}")
-#           return super(args) unless args[:type] == 'user_list'
-  
-#           rows = []
-#           headers = []
-  
-#           User.real.includes(:groups).find_each do |user|
-#             row = {
-#               "Username" => user.username,
-#               "Name" => user.name,
-#               "Created At" => user.created_at,
-#               "Groups" => user.groups.pluck(:name).join(", ")
-#             }
-#             headers = row.keys if headers.empty?
-#             rows << row
-#           end
-  
-#           file_path = CsvExport.export(
-#             headers,
-#             rows,
-#             "user_list"
-#           )
-  
-#           StaffExport.create!(
-#             target_user_id: args[:current_user_id],
-#             file: file_path,
-#             status: StaffExport.statuses[:pending]
-#           )
-#         end
-#       end
-#     end
-  
-#     ::Jobs::ExportCsvFile.prepend(::NoEmailExport::RemoveEmailsFromExport)
-# end
